@@ -1,9 +1,37 @@
 nav {
-    background-color: #222;
-    padding: 20px;
+    background-color: #111827;
+    padding: 16px 24px;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 nav h2{
     color:white;
     margin: 0;
+    font-size: 20px;
+}
+
+nav a{
+    color: #d1d5db;
+    text-decoration: none;
+    margin-left: 16px;
+    font-weight: 500;
+}
+
+nav a:hover{
+    color:white;
+}
+
+nav button{
+    margin-left: 20px;
+    padding: 6px 12px;
+    background-color: #2563eb;
+    border:none;
+    color:white;
+    cursor:pointer;
+}
+
+nav button:hover{
+    opacity: 0.9;
 }

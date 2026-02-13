@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import TaskList from "../components/TaskList";
 
 function Home(){
      
     const [count , setCount] = useState(0);
 
-    const [tasks, setTasks] = useState([
-        "learn react","Build projects", "Master the state","Deploy a website"
-    ]);
-
+    const [tasks, setTasks] = useState(() => {
+        const savedTasks = localStorage.getItem("tasks");
+        return savedTasks ? JSON.parse(savedTasks) : [
+            "Learn React",
+            "Build Project-001",
+            "Master State",
+        ];
+    });
     const [newTask , setNewTask] = useState("");
 
     const handleAddTask = () => {

@@ -2,9 +2,14 @@ function TaskList({ tasks, onDelete }) {
   return (
     <ul>
       {tasks.map((task, index) => (
-        <li style={{marginBottom:"8px"}}  key={index}>
+        <li style={{
+          marginBottom: "8px",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          }}  key={index}>
           {task}
-          <button onClick={() => onDelete(index)}>
+          <button className="delete-btn" onClick={() => onDelete(index)}>
             Delete
           </button>
         </li>
