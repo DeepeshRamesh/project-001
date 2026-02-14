@@ -15,6 +15,13 @@ function Home(){
     });
     const [newTask , setNewTask] = useState("");
 
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [editedText,setEditedText] = useState("");
+
+    useEffect(() => {
+        localStorage.setItem("tasks",JSON.stringify(tasks));
+    }, [tasks]);
+
     const handleAddTask = () => {
         if (newTask.trim() === "")return;
 
@@ -25,6 +32,24 @@ function Home(){
     const handleDeleteTask = (indexToDelete) => {
         const updatedTasks = tasks.filter((_, index) => index !== indexToDelete);
         setTasks(updatedTasks);
+    };
+
+    const handleEditTask = (index) => {
+        setEditingIndex(index);
+        setEditedText(tasks[index]);
+    };
+
+    const handleSaveTask = () => {
+        const updatedTasks = tasks.map((task, index) => 
+            index === editingIndex ? editedText : task);
+        setTasks(updatedTasks);
+        setEditingIndex(null);
+        setEditedText("");
+    };
+
+    const handleCancelEdit = () => {
+        setEditingIndex(null);
+        setEditedText("");
     };
 
     return (
@@ -51,8 +76,22 @@ function Home(){
             <button onClick={handleAddTask}>Add Task</button>
 
             <ul>
-                <TaskList tasks={tasks} onDelete={handleDeleteTask} />
+                <TaskList 
+                tasks={tasks} 
+                onDelete={handleDeleteTask}
+                onEdit={handleEditTask}
+                editingIndex={editingIndex}
+                editedText={editedText}
+                setEditedText={setEditedText}
+                onSave={handleSaveTask}
+                onCancel={handleCancelEdit}
+                />
             </ul>
+
+            <button onClick={() => setTasks([])}>
+                Clear All Tasks
+            </button>
+
         </div>
     
     );
