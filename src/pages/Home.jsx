@@ -8,15 +8,17 @@ function Home(){
     const [tasks, setTasks] = useState(() => {
         const savedTasks = localStorage.getItem("tasks");
         return savedTasks ? JSON.parse(savedTasks) : [
-            {id:Date.now(), text:"Learn React"},
-            {id:Date.now() + 1, text:"Build Project-001"},
-            {id:Date.now() +2, text:"Master State"},
+            {id:Date.now(), text:"Learn React",completed:false},
+            {id:Date.now() + 1, text:"Build Project-001",completed:false},
+            {id:Date.now() +2, text:"Master State",completed:false},
         ];
     });
     const [newTask , setNewTask] = useState("");
 
     const [editingIndex, setEditingIndex] = useState(null);
     const [editedText,setEditedText] = useState("");
+
+    const [filter, setFilter] = useState("all");
 
     useEffect(() => {
         localStorage.setItem("tasks",JSON.stringify(tasks));
@@ -25,23 +27,24 @@ function Home(){
     const handleAddTask = () => {
         if (newTask.trim() === "")return;
 
-        setTasks([...tasks,newTask]); //updating array state(copy old tasks, add new,replace state)
+        setTasks([...tasks,{id:Date.now(), text:newTask,completed:false}]); //updating array state(copy old tasks, add new,replace state)
         setNewTask(""); //resets the input after adding
     };
 
-    const handleDeleteTask = (indexToDelete) => {
-        const updatedTasks = tasks.filter((_, index) => index !== indexToDelete);
+    const handleDeleteTask = (idToDelete) => {
+        const updatedTasks = tasks.filter((task) => task.id !== idToDelete);
         setTasks(updatedTasks);
     };
 
-    const handleEditTask = (index) => {
-        setEditingIndex(index);
-        setEditedText(tasks[index]);
+    const handleEditTask = (id) => {
+        const taskToEdit = tasks.find((task) => task.id === id);
+        setEditingIndex(id);
+        setEditedText(taskToEdit.text);
     };
 
     const handleSaveTask = () => {
-        const updatedTasks = tasks.map((task, index) => 
-            index === editingIndex ? editedText : task);
+        const updatedTasks = tasks.map((task) => 
+            task.id === editingIndex ? {...task, text:editedText}: task);
         setTasks(updatedTasks);
         setEditingIndex(null);
         setEditedText("");
@@ -51,6 +54,20 @@ function Home(){
         setEditingIndex(null);
         setEditedText("");
     };
+
+    const handleToggleComplete = (id) =>{
+        const updatedTasks = tasks.map(
+            (task) => task.id === id ? { ...task,completed: !task.completed} : task
+        );
+
+        setTasks(updatedTasks);
+    }
+
+    const filteredTasks = tasks.filter((task) =>{
+        if (filter === "active") return !task.completed;
+        if (filter === "completed") return task.completed;
+        return true;
+    });
 
     return (
         <div>
@@ -75,9 +92,15 @@ function Home(){
 
             <button onClick={handleAddTask}>Add Task</button>
 
+            <div style={{ margin: "16px 0"}}>
+                <button onClick={() => setFilter("all")}>All</button>
+                <button onClick={() => setFilter("active")}>Active</button>
+                <button onClick={() => setFilter("completed")}>completed</button>
+            </div>
+
             <ul>
                 <TaskList 
-                tasks={tasks} 
+                tasks={filteredTasks} 
                 onDelete={handleDeleteTask}
                 onEdit={handleEditTask}
                 editingIndex={editingIndex}
@@ -85,6 +108,7 @@ function Home(){
                 setEditedText={setEditedText}
                 onSave={handleSaveTask}
                 onCancel={handleCancelEdit}
+                onToggle={handleToggleComplete}
                 />
             </ul>
 
