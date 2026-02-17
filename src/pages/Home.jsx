@@ -8,9 +8,9 @@ function Home(){
     const [tasks, setTasks] = useState(() => {
         const savedTasks = localStorage.getItem("tasks");
         return savedTasks ? JSON.parse(savedTasks) : [
-            "Learn React",
-            "Build Project-001",
-            "Master State",
+            {id:Date.now(), text:"Learn React"},
+            {id:Date.now() + 1, text:"Build Project-001"},
+            {id:Date.now() +2, text:"Master State"},
         ];
     });
     const [newTask , setNewTask] = useState("");
