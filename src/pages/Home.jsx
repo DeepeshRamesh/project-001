@@ -1,124 +1,92 @@
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import TaskList from "../components/TaskList";
+import { useTasks } from "../hooks/useTasks";
 
-function Home(){
-     
-    const [count , setCount] = useState(0);
+function Home() {
+  const [count, setCount] = useState(0);
+  const [newTask, setNewTask] = useState("");
 
-    const [tasks, setTasks] = useState(() => {
-        const savedTasks = localStorage.getItem("tasks");
-        return savedTasks ? JSON.parse(savedTasks) : [
-            {id:Date.now(), text:"Learn React",completed:false},
-            {id:Date.now() + 1, text:"Build Project-001",completed:false},
-            {id:Date.now() +2, text:"Master State",completed:false},
-        ];
-    });
-    const [newTask , setNewTask] = useState("");
+  const {
+    tasks,
+    addTask,
+    deleteTask,
+    toggleTask,
+    startEdit,
+    saveEdit,
+    cancelEdit,
+    editingId,
+    editedText,
+    setEditedText,
+    filter,
+    setFilter,
+    clearTasks,
+  } = useTasks();
 
-    const [editingIndex, setEditingIndex] = useState(null);
-    const [editedText,setEditedText] = useState("");
+  return (
+    <div>
+      <h1>Counter: {count}</h1>
 
-    const [filter, setFilter] = useState("all");
+      {count > 5 && <p>You crossed 5!🔥</p>}
+      {count < 0 && (
+        <p style={{ color: "red" }}>Negative Value!!</p>
+      )}
 
-    useEffect(() => {
-        localStorage.setItem("tasks",JSON.stringify(tasks));
-    }, [tasks]);
+      <button onClick={() => setCount(count + 1)}>
+        Increase
+      </button>
+      <button onClick={() => setCount(count - 1)}>
+        Decrease
+      </button>
 
-    const handleAddTask = () => {
-        if (newTask.trim() === "")return;
+      <hr />
 
-        setTasks([...tasks,{id:Date.now(), text:newTask,completed:false}]); //updating array state(copy old tasks, add new,replace state)
-        setNewTask(""); //resets the input after adding
-    };
+      <h2>My Tasks</h2>
 
-    const handleDeleteTask = (idToDelete) => {
-        const updatedTasks = tasks.filter((task) => task.id !== idToDelete);
-        setTasks(updatedTasks);
-    };
+      <input
+        type="text"
+        placeholder="Enter the new task"
+        value={newTask}
+        onChange={(e) => setNewTask(e.target.value)}
+      />
 
-    const handleEditTask = (id) => {
-        const taskToEdit = tasks.find((task) => task.id === id);
-        setEditingIndex(id);
-        setEditedText(taskToEdit.text);
-    };
+      <button
+        onClick={() => {
+          addTask(newTask);
+          setNewTask("");
+        }}
+      >
+        Add Task
+      </button>
 
-    const handleSaveTask = () => {
-        const updatedTasks = tasks.map((task) => 
-            task.id === editingIndex ? {...task, text:editedText}: task);
-        setTasks(updatedTasks);
-        setEditingIndex(null);
-        setEditedText("");
-    };
+      <div style={{ margin: "16px 0" }}>
+        <button onClick={() => setFilter("all")}>
+          All
+        </button>
+        <button onClick={() => setFilter("active")}>
+          Active
+        </button>
+        <button onClick={() => setFilter("completed")}>
+          Completed
+        </button>
+      </div>
 
-    const handleCancelEdit = () => {
-        setEditingIndex(null);
-        setEditedText("");
-    };
+      <TaskList
+        tasks={tasks}
+        onDelete={deleteTask}
+        onEdit={startEdit}
+        editingIndex={editingId}
+        editedText={editedText}
+        setEditedText={setEditedText}
+        onSave={saveEdit}
+        onCancel={cancelEdit}
+        onToggle={toggleTask}
+      />
 
-    const handleToggleComplete = (id) =>{
-        const updatedTasks = tasks.map(
-            (task) => task.id === id ? { ...task,completed: !task.completed} : task
-        );
-
-        setTasks(updatedTasks);
-    }
-
-    const filteredTasks = tasks.filter((task) =>{
-        if (filter === "active") return !task.completed;
-        if (filter === "completed") return task.completed;
-        return true;
-    });
-
-    return (
-        <div>
-            <h1>Counter: {count}</h1>
-
-            {count > 5 ? <p>You crossed 5!🔥</p>:null}
-            {count < 0 && <p style={{color:"red"}}>Negative Value!!</p>}
-
-            <button onClick={() => setCount(count + 1)}>Increase</button>
-            <button onClick={() => setCount(count - 1)}>Decrease</button>
-
-            <hr />
-
-            <h2>My Tasks</h2>
-
-            <input
-                type="text"
-                placeholder="Enter the new task"
-                value ={newTask}
-                onChange={(e) => setNewTask(e.target.value)} // controlled input
-            />
-
-            <button onClick={handleAddTask}>Add Task</button>
-
-            <div style={{ margin: "16px 0"}}>
-                <button onClick={() => setFilter("all")}>All</button>
-                <button onClick={() => setFilter("active")}>Active</button>
-                <button onClick={() => setFilter("completed")}>completed</button>
-            </div>
-
-            <ul>
-                <TaskList 
-                tasks={filteredTasks} 
-                onDelete={handleDeleteTask}
-                onEdit={handleEditTask}
-                editingIndex={editingIndex}
-                editedText={editedText}
-                setEditedText={setEditedText}
-                onSave={handleSaveTask}
-                onCancel={handleCancelEdit}
-                onToggle={handleToggleComplete}
-                />
-            </ul>
-
-            <button onClick={() => setTasks([])}>
-                Clear All Tasks
-            </button>
-
-        </div>
-    
-    );
+      <button onClick={clearTasks}>
+        Clear All Tasks
+      </button>
+    </div>
+  );
 }
 
 export default Home;
