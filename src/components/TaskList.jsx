@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from "framer-motion";
 function TaskList({ 
   tasks,
   onDelete,
@@ -11,8 +12,14 @@ function TaskList({
 }) {
   return (
     <ul>
+      <AnimatePresence>
       {tasks.map((task) => (
-        <li style={{
+        <motion.li
+        initial ={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 10 }}
+        transition={{ duration: 0.2 }}
+         style={{
           marginBottom: "8px",
           display: "flex",
           justifyContent: "space-between",
@@ -53,8 +60,9 @@ function TaskList({
                 </div>
               </>
             )}
-        </li>
+        </motion.li>
       ))}
+      </AnimatePresence>
     </ul>
   );
 }

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import TaskList from "../components/TaskList";
 import { useTasks } from "../hooks/useTasks";
+import { motion } from "framer-motion";
+
 
 function Home() {
   const [count, setCount] = useState(0);
@@ -20,6 +22,11 @@ function Home() {
     filter,
     setFilter,
     clearTasks,
+    totalTasks,
+    activeTasks,
+    completedTasks,
+    progress,
+    clearCompleted,
   } = useTasks();
 
   return (
@@ -57,6 +64,35 @@ function Home() {
       >
         Add Task
       </button>
+
+      <div style={{ marginBottom: "20px" }}>
+        <h2>Task Overview</h2>
+        <p>Total: {totalTasks}</p>
+        <p>Active: {activeTasks}</p>
+        <p>Completed: {completedTasks}</p>
+        <div style={{
+          background: "#e5e7eb",
+          height: "10px",
+          borderRadius: "6px",
+          overflow: "hidden",
+          marginTop: "8px",
+        }}>
+        <motion.div style={{
+          width:`${progress}`,
+          background: "#10b981",
+          height: "100%",
+          transition: "width 0.3s ease",
+        }}/>
+        </div>
+        <p style={{marginTop:"6px"}}>
+          Progress: {progress}
+        </p>
+        <button onClick={clearCompleted} style={{marginTop:"10px"}}>
+          Clear Completed
+        </button>
+      </div>
+
+      
 
       <div style={{ margin: "16px 0" }}>
         <button onClick={() => setFilter("all")}>

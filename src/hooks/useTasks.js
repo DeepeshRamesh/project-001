@@ -71,6 +71,16 @@ export function useTasks() {
     return true;
   });
 
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((task)=>task.completed).length;
+  const activeTasks = totalTasks - completedTasks;
+
+  const progress = totalTasks === 0 ? 0: Math.round((completedTasks / totalTasks)*100);
+
+  const clearCompleted = () => {
+    setTasks(tasks.filter((task)=>!task.completed));
+  };
+
   return {
     tasks: filteredTasks,
     addTask,
@@ -84,5 +94,10 @@ export function useTasks() {
     setEditedText,
     filter,
     setFilter,
+    totalTasks,
+    activeTasks,
+    completedTasks,
+    progress,
+    clearCompleted,
   };
 }
